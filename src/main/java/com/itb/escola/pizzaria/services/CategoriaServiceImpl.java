@@ -71,17 +71,16 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria update(Categoria categoria, Long id) {
-        try{
-            if(!categoria.validarCategoria()) {
-                throw new BadRequest(categoria.getMensagemErro());
-            }
-            Categoria categoriaDb = categoriaRepository.findById(id).get();
-            categoriaDb.setNome(categoria.getNome());
-            categoriaDb.setDescricao(categoria.getDescricao());
-            return categoriaRepository.save(categoriaDb);
-        }catch (Exception ex){
-            throw new NotFound("Categoria não encontrada para o id " + id);
+        if (!categoria.validarCategoria()) {
+            throw new BadRequest(categoria.getMensagemErro());
         }
+        if (!categoriaRepository.existsById(id)) {
+            throw new NotFound("Categoria não encontrada com o id " + id);
+        }
+        Categoria categoriaDb = categoriaRepository.findById(id).get();
+        categoriaDb.setNome(categoria.getNome());
+        categoriaDb.setDescricao(categoria.getDescricao());
+        return categoriaRepository.save(categoriaDb);
 
     }
 
